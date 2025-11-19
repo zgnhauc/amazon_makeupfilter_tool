@@ -17,7 +17,7 @@ clicked = StringVar()
 clicked.set("Select Skin Type")  
 
 drop = OptionMenu(root, clicked, *options1)
-drop.pack()
+drop.pack(padx = 30, pady=30)
 
 options2 = [
     "<$100", 
@@ -28,6 +28,6 @@ clicked = StringVar()
 clicked.set("Select Price Range")
 
 drop = OptionMenu(root, clicked, *options2)
-drop.pack()
+drop.pack(padx = 30, pady=30)
 
 root.mainloop()
