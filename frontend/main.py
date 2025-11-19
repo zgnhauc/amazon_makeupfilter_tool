@@ -30,7 +30,7 @@ clicked = StringVar()
 clicked.set("Select Price Range")
 
 drop = OptionMenu(root, clicked, *options2)
-drop.config(bg = "violet")
+drop.config(bg = "violet", width = 15)
 drop.pack(padx = 30, pady=30)
 
 root.mainloop()
