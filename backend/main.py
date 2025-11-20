@@ -1,22 +1,29 @@
-# scrapping data from amazon
 
-# cleaning + organizing data from amazon. put into csv file in following format: product name, description, price, and reviews
+# libraries + set up
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
 
-# import data + libraries
-import pandas as pd
-import numpy as np
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 
-# get product name
+# product we are checking
+productURL = ("https://www.amazon.com/Face-Shop-Cleansing-Hydrating-Moisturizing/dp/B0DB6D3L9N/ref=sr_1_5_sspa?crid=17TE4QHZ0Q9DB&dib=eyJ2IjoiMSJ9.JnQIERFbDYWxZ1Jrg1eGdMQwCOHePJ6WAL_OZ9tll6n4Qap-r_rxP5j6kH8gXbLjBi3ApDBH3t8D6TYjhMgcFtrZhlty7ydHI8P0wElZHsd1PbJPlHbByt9hw5CGag9nFen8zFCSFPTbWDgwIaNG6J3AZEj859HG_pllSBrtgQN34DybSnZ98ImPRoepmOkax_-hBGkKyNpRBBYWjbcpjd9-Pc_I8gDh2RtvKm6zGVm2S_E8nCb1o5GwE9eebodDDbcRqi85wjocdhoZzxvDaimVHaM55GMNIoc9zg56u3M.zx9ocwwpAn9cOTJQHjwaZlyRhPtM_wlGwHIdo_YkDxE&dib_tag=se&keywords=makeup+and+skincare&qid=1763616645&sprefix=makeup+and+skincare%2Caps%2C163&sr=8-5-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1")
 
-# get price
+driver.get(productURL) # goes to product URL
+driver.quit() # exits the URL to close
 
-# get list of reviews
+# extracting product details
+productName = driver.find_element(By.ID, "productTitle").text # product name
+productDescriptionList = driver.find_element(By.CSS_SELECTOR, "a-unordered-list a-vertical a-spacing-mini") # product descriptions
+# still need to get product price and reviews, store in variables productPrice and productReviews
 
 # get skin type
 oilyKeywords = ["oily", "greasy", "shiny", "sticky", "glossy"]
 normalKeywords = ["normal", "combination", "even", "smooth"]
 dryKeywords = ["dry", "rough", "dehydrated", "flaky"]
 
+productSkinType = "None"
 def skinType(reviews): # tests skin type compatability, takes list of reviews as parameter
   sentiments = 0
   mentions = 0
@@ -36,15 +43,47 @@ def skinType(reviews): # tests skin type compatability, takes list of reviews as
   
   sentimentScore = sentiments / mentions
   if (sentimentScore >= -1) and (sentimentScore =< -0.4):
-    return "Oily"
+    productSkinType = "Oily"
+    return productSkinType
   elif (sentimentScore > -0.4) and (sentimentScore < 0.4):
-    return "Normal"
+    productSkinType = "Normal"
+    return productSkinType
   else:
-    return "Dry"
+    productSkinType = "Dry"
+    return productSkinType
 
 # check if product meets user specifications
+priceGood = False
+skinTypeGood = False
+allSpecifications = False
+def meetsRequirements(userSkinType, userBudget):
+  if userSkinType == productSkinType:
+    skinTypeGood = True
+  if userBudget >= productPrice:
+    priceGood = True
 
-# make a summary of all reviews
+  if skinTypeGood == True and priceGood == True:
+    print("Meets skin type and budget specifications!")
+    allSpecifications = True
+    return allSpecifications
+  elif skinTypeGood == False and priceGood == False:
+    print("Does not meet skin type specification.")
+    return allSpecifications
+  elif skinTypeGood == True and priceGood == False:
+    print("Does not meet price specification.")
+    return allSpecifications
+  else:
+    print("Does not meet skin type and price specifications.")
+    return allSpecifications
+
+# make a summary of all reviews using AI ... store summary paragraph in variable productReviewSummary
 
 # print results
-  
+if allSpecifications == True:
+  print(productName)
+  print(productDescription)
+  print(productPrice)
+  print(productReviewSummary)
+  print(productSkinType)
+else:
+  print("Try another product")
